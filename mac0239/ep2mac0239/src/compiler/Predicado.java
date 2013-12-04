@@ -32,7 +32,7 @@ public class Predicado {
 		if (table.getMap().containsKey(arg) == false) {
 			table.addToTable(arg, i);
 		} else {
-			System.out.println(arg + "não inserido pois ja esta na tabela de variaveis da clausula");
+			/*System.out.println(arg + "não inserido pois ja esta na tabela de variaveis da clausula");*/
 		}
 	}
 
@@ -43,7 +43,7 @@ public class Predicado {
 		System.out.print(inc.getIncrementador());
 		for(int i = 1; i < argumentos.size(); i++){
 			inc = table.getIncremento(argumentos.get(i));
-			System.out.print(inc.getIncrementador());
+			System.out.print(","+ inc.getIncrementador());
 		}
 		/*for (String s : argumentos) {
 			inc = table.getIncremento(s);
