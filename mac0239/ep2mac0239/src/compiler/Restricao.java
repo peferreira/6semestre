@@ -14,9 +14,14 @@ public class Restricao {
 	void setComparador(String comparador){
 		this.comparador = comparador;
 	}
-	void addEsq(String v, String sinal) {
+	void addRestricao(String v, String sinal,String direcao) {
 		Tupla t = new Tupla(v, sinal);
-		esq.add(t);
+		if(direcao.equals("dir")){
+			dir.add(t);
+		}
+		else{
+			esq.add(t);
+		}
 	}
 
 	void addDir(String v, String sinal) {
