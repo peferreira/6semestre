@@ -1,0 +1,97 @@
+Métodos Formais.
+
+EP1 SUDOKO
+ 
+aluno: Pedro Ferreira Alexandre
+aluno: Gilmar Cintra
+
+número de literais para resolução: 729
+número de cláusulas: 10287 + uma cláusula para cada valor inicial do sudoku
+
+para fins de testes o nosso programa funciona para o exemplo do enunciado.
+
+LITERAIS.
+
+A idéia para construção do problema segue a sugestão do enunciado,
+onde para cada posição do tabuleiro do sudoko podemos ter um valor
+entre 1 e 9. Para isso criamos literais no formato P(ijk), sendo (i,j)
+linha i e coluna j, e o indice k o valor equivalente daquele literal 
+na posição (i,j).
+Dessa forma teremos para cada posição do tabuleiro 9 variáveis, 
+o que nos dá um total de 729 literais para um tabuleiro 9x9 (81 posições).
+
+MAPEAMENTOS.
+
+Os resolvedores SAT precisam que as variáveis sejam inteiros maiores ou
+iguais a 1, e menores que o número total de variáveis. Portanto, foi
+necessário criar uma função de mapeamento para transformar cada posição
+da matriz (podemos pensar em um cubo, já que k é um valor também entre
+1 e 9) em um valor entre 1 e 729. Para isso crio uma função que pega
+os valores ijk como um número entre 111 (i=1,j=1,k=1) até o valor 
+999 (i=1,j=1,k=1), e faz um mapeamento no vetor para os valores 
+desejados.
+
+
+CLÁUSULAS.
+
+As cláusulas foram divididas em 4 classes:
+
+
+1. Necessariamente uma posição do grid assume um valor, e portanto,
+cada posição, para determinado (i,j) terá um valor k.
+
+Exemplo: P(111) U P(112) U P(113) ... U P(119) , na posição (1,1)
+do grid.
+
+
+2. Cláusulas que garantem que somente uma váriavel ocorrerá em uma 
+determinada posição do grid.
+
+Exemplo: P(111) e P(112) que representam respectivamente
+valor 1 e 2 na posição (1,1) do grid, não poderão ser verdadeiras
+simultaneamente.
+neste caso a validade de P(ijk) -> ~P(ijs), com s assumindo valores
+entre 1 e 9, e s diferente de k.
+
+
+3. Cláusulas que garantem que não existiram linhas e colunas do grid
+com dois valores iguais. A verdade de um literal P(i,j,k) implica que
+literais que estejam na linha i ou coluna j e tenham k como índice
+sejam falsos. 
+
+Exemplo: a validade de uma variável P(111) -> -P(121) ^ -P(131) ,
+mostra a implicação para que duas variáveis que estejam na mesma linha
+não assumam os mesmos valores.
+
+Exemplo: a validade de uma variável P(111) -> -P(211) ^ -P(311) ,
+mostra a implicação para que duas variáveis que estejam na mesma coluna
+não assumam os mesmos valores.
+
+
+4. Cláusulas que garantem que duas váriaveis em uma mesma zona ( area
+3x3 no sudoko, de forma a dividir de forma exata o grid 9x9 em 9 grids
+3x3) não possuirão os mesmos valores. Temos que algumas das variáveis
+nesse grid 3x3 ja estarão inclusas em cláusulas que restringem linhas e
+colunas. O trabalho então foi verificar a qual zona uma determinada variável
+pertence e relacionar as váriaveis que estão na mesma zona. Dessa forma,
+mapeamos as zonas e assim podemos facilmente descobrir quais variáveis estão
+em uma mesma zona.
+Então concluo que a verdade de um literal em determinada zona implicará
+a falsidade de todos os literais que representem aquele valor dentro daquela
+zona.
+
+
+Por fim, para garantir que os valores do grid que são fornecidos para iniciar
+o problema sejam os passados como entrada para meu programa, crio
+uma cláusula com a respectiva váriavel referente ao valor da entrada para
+cada um dos valores fornecidos, dessa forma o SATsolver tentará satisfazer
+essas cláusulas, garantindo os valores de entrada como verdadeiros. Esses valores
+iniciais podem variar para cada instância do sudoko.
+
+  
+
+
+
+
+
+
