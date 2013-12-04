@@ -6,17 +6,23 @@ import java.util.Map.Entry;
 public class Clausula {
 
 	ArrayList<Predicado> predicados;
+	public ArrayList<Predicado> getPredicados() {
+		return predicados;
+	}
+
 	ArrayList<Restricao> restricoes;
 	TabelaVariaveis table;
 	ArrayList<Incrementador> incrementadores;
+	private GeradorCnf mapCnf;
 
-	public Clausula() {
+	public Clausula(GeradorCnf mapCnf) {
 		predicados = new ArrayList<Predicado>();
 		restricoes = new ArrayList<Restricao>();
 		table = new TabelaVariaveis();
 		incrementadores = new ArrayList<Incrementador>();
+		this.mapCnf = mapCnf;
 	}
-
+	
 
 	public void addRestricao(Restricao r ){
 		restricoes.add(r);
@@ -67,13 +73,18 @@ public class Clausula {
 				}
 			}
 			Predicado p = predicados.get(0);
-			p.print();
+			p.print(mapCnf);
 			for (int j = 1; j < predicados.size(); j++) {
 				System.out.print(" ");
 				p = predicados.get(j);
-				p.print();
+				p.print(mapCnf);
 			}
-			System.out.println(".");
+			if(mapCnf.getState() == true){
+			System.out.println(" 0");
+			}
+			else{
+				System.out.println(".");
+			}
 		}
 
 		else {

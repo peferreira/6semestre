@@ -3,43 +3,89 @@ package compiler;
 import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
+
 class Tradutor implements TradutorConstants {
   ArrayList < Clausula > clausulas;
   TabelaVariaveis global;
+  GeradorCnf gerCnf;
 
   public static void main(String [] args) throws ParseException, TokenMgrError
   {
+    String opcao = "", file = "";
     Tradutor parser = null;
-    try
+    if (args.length > 0)
     {
-      parser = new Tradutor(new FileInputStream("/home/pedro/workspace/ep2mac0239/src/compiler/input.txt"));
+      if (args.length == 1)
+      {
+        if (args[0].equals("-c"))
+        {
+          opcao = args [0];
+        }
+        else
+        {
+                file = args[0];
+        }
+     }
+      else if (args.length == 2)
+      {
+        opcao = args[0];
+        file = args [1];
+      }
     }
-    catch (FileNotFoundException e)
+    if (!file.equals(""))
     {
-      // TODO Auto-generated catch block      e.printStackTrace();
+      try
+      {
+        parser = new Tradutor(new FileInputStream(System.getProperty("user.dir") + "/src/compiler/" + file));
+      }
+      catch (FileNotFoundException e)
+      {
+        // TODO Auto-generated catch block        e.printStackTrace();
+      }
+    }
+    else
+    {
+      try
+      {
+        parser = new Tradutor(new FileInputStream(System.getProperty("user.dir") + "/src/compiler/input.txt"));
+      }
+      catch (FileNotFoundException e)
+      {
+        // TODO Auto-generated catch block        e.printStackTrace();
+      }
     }
     parser.init();
     parser.Start();
+    if (opcao.equals("-c"))
+    {
+      parser.getGerCnf().setState(true);
+    }
     parser.printClausulas();
     /*parser.printaDeclaracoes();*/
+  }
+  GeradorCnf getGerCnf()
+  {
+    return gerCnf;
   }
 
   void init()
   {
     clausulas = new ArrayList < Clausula > ();
     global = new TabelaVariaveis();
+    gerCnf = new GeradorCnf(clausulas);
   }
+
   void printaDeclaracoes()
   {
-        for (Entry<String, Incrementador> entry : global.getMap().entrySet()) {
-                        String key = entry.getKey();
-                        System.out.print(key+":");
-                        System.out.print(global.getMap().get(key).getInicio());
-                        System.out.println(" "+global.getMap().get(key).getInicio());
-
-                }
-
+    for (Entry < String, Incrementador > entry : global.getMap().entrySet())
+    {
+      String key = entry.getKey();
+      System.out.print(key + ":");
+      System.out.print(global.getMap().get(key).getInicio());
+      System.out.println(" " + global.getMap().get(key).getInicio());
+    }
   }
+
   void printClausulas()
   {
     for (Clausula c : clausulas)
@@ -53,7 +99,8 @@ class Tradutor implements TradutorConstants {
   Token op = null;
     t = jj_consume_token(VARIABLE);
     r.addEsq(t.image, "+");
-    System.out.print(t);
+    /*System.out.print(t);*/
+
     label_1:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -65,10 +112,11 @@ class Tradutor implements TradutorConstants {
         break label_1;
       }
       op = jj_consume_token(OPERADOR);
-      System.out.print(op.image);
+
       t = jj_consume_token(VARIABLE);
       r.addEsq(t.image, op.image);
-      System.out.print(t);
+      /*System.out.print(t);*/
+
     }
   }
 
@@ -77,7 +125,8 @@ class Tradutor implements TradutorConstants {
   Token op = null;
     t = jj_consume_token(VARIABLE);
     r.addDir(t.image, "+");
-    System.out.print(t);
+    /*System.out.print(t);*/
+
     label_2:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -89,13 +138,11 @@ class Tradutor implements TradutorConstants {
         break label_2;
       }
       op = jj_consume_token(OPERADOR);
-      System.out.print(op.image);
+
       t = jj_consume_token(VARIABLE);
-      if (t != null)
-      {
-        r.addDir(t.image, op.image);
-        System.out.print(t);
-      }
+      r.addDir(t.image, op.image);
+      /*System.out.print(t);*/
+
     }
   }
 
@@ -103,12 +150,14 @@ class Tradutor implements TradutorConstants {
   Token t = null;
   Restricao r;
     r = new Restricao();
-    System.out.print(" ");
+    /*System.out.print(" ");*/
+
     operacaoEsq(r);
     t = jj_consume_token(COMPARADOR);
     r.setComparador(t.image);
     c.addRestricao(r);
-    System.out.print(" " + t + " ");
+    /*System.out.print(" " + t + " ");*/
+
     operacaoDir(r);
   }
 
@@ -118,7 +167,8 @@ class Tradutor implements TradutorConstants {
   Predicado pred = p;
     t = jj_consume_token(VARIABLE);
     pred.addArg(t.image, global.getMap().get(t.image));
-    System.out.print(t);
+    /*System.out.print(t);*/
+
     label_3:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -134,7 +184,7 @@ class Tradutor implements TradutorConstants {
       if (t2 != null)
       {
         p.addArg(t2.image, global.getMap().get(t2.image));
-        System.out.print("," + t2);
+        /*System.out.print("," + t2);*/
       }
     }
   }
@@ -149,22 +199,24 @@ class Tradutor implements TradutorConstants {
     p = new Predicado(t.image);
     p.setNegado(true);
     c.addPredicado(p);
-    System.out.print("-" + t);
+    /*System.out.print("-" + t);*/
+
       jj_consume_token(OPEN_PAR);
-    System.out.print("(");
+
       argumento(p);
-    System.out.print(") ");
+
       jj_consume_token(CLOSE_PAR);
       break;
     case PREDID:
       t = jj_consume_token(PREDID);
     p = new Predicado(t.image);
     c.addPredicado(p);
-    System.out.print(t);
+    /*System.out.print(t);*/
+
       jj_consume_token(OPEN_PAR);
-    System.out.print("(");
+
       argumento(p);
-    System.out.print(") ");
+
       jj_consume_token(CLOSE_PAR);
       break;
     default:
@@ -175,7 +227,7 @@ class Tradutor implements TradutorConstants {
   }
 
   final public void clausula() throws ParseException {
-  Clausula c = new Clausula();
+  Clausula c = new Clausula(gerCnf);
   clausulas.add(c);
     predicado(c);
     label_4:
@@ -192,7 +244,7 @@ class Tradutor implements TradutorConstants {
       predicado(c);
     }
     jj_consume_token(13);
-    System.out.print(".");
+
     label_5:
     while (true) {
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
@@ -205,19 +257,19 @@ class Tradutor implements TradutorConstants {
       }
       restricao(c);
     }
-    System.out.println();
+
   }
 
   final public void declaracao() throws ParseException {
   Token t, t1, t2;
   String variable;
     t = jj_consume_token(VARIABLE);
-    System.out.print(t + ":");
+
     jj_consume_token(14);
     t1 = jj_consume_token(NUMBER);
-    System.out.print(t1 + " ");
+
     t2 = jj_consume_token(NUMBER);
-    System.out.println(t2);
+
     jj_consume_token(13);
     Incrementador inc = new Incrementador(t.image, Integer.parseInt(t1.image), Integer.parseInt(t2.image));
     global.addToTable(t.image, inc);
